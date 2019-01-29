@@ -1,0 +1,104 @@
+Presentation - What's new in DeepSea
+
+
+
+Introduction
+
+Speaker, Company
+
+*What's the project?*
+Deepsea is a project mainly developed at SUSE to deploy and manage ceph.
+Based on Salt
+
+Salt is a config-management and remote-execution engine, highly extensible and customizable 
+with python.
+
+Wink over to ceph
+A very short introduction. ( For those who may just've joined the room )
+
+This talk is a follow-up of Jan Fajerski's "Deploying Ceph Clusters with Salt" talk from FOSDEM 2017
+
+
+*How does DeepSea work?*
+
+A bunch of salt concepts mixed together.
+
+Essentially we use 'Orchestrations' that allow us to group most salt concepts and
+create a very abstracted way of perfoming operations.
+
+This allows us to group most tasks in 'Stages' range(0, 5)
+
+short gif/video to get people on board.
+
+
+This session will not go deep into the workings but will rather show what we've done in the meanwhile
+to make it better and easier to use.
+
+*Start with the CLI wrapper.*
+
+Salt is not terribly great at providing feedback in orchestrations. Well, it is when you have one node with
+like 3 operations running. However we often times have hundreds of nodes to manage and each stage not often
+(dynamically) runs a good two dozens of states (which internally can also run multiple commands)
+
+Those of you who used salt have looked in the salt's event bus to see what's going on on the various nodes. This
+is however cluttered with house-keeping things from salt.. 
+
+We went ahead and pre-computed (jinja can be expanded ahead of time) the steps that salt will perform and match those
+with the events running through salt's event-bus. That way you get immediate response after *one* operation has succeeded
+rather than the entire process.
+
+*Operations*
+
+Back then we were able to deploy all major components that supported Ceph (rgw, mon, osd, gaensha, iscsi)
+_via a roles based approach_
+
+Since then we added multiple features 'around' those roles.
+
+In addition to the existing
+
+*Existing*
+- Creating OSD 'profiles'
+  - disk -> osd assignment
+  - disk -> journal (wal, db)
+- decommitioning of old nodes (old)
+- adding roles (old)
+- installation (old)
+- restarting (old)
+- rebooting (old)
+- update (old)
+
+*New*
+- restarting
+  - conditional restarts (services reacting to updates)
+  - conditional restarts (on config changes)
+- staged/sequential updates (with safety meassurements)
+- monitoring (will be a separate role in the future)
+  - prometheus & grafana
+  - grafana was integrated in openattic
+  - latest release -> mgr dashboard
+- simplify for openstack user/key creation
+  - also export the configdict
+- replacement of individual osds
+- migration fs->bs
+  - also between different layouts
+- apparmor
+- tuned profiles
+- upgrade (controlled, sequential, fully automated)
+- staged shutdown (and startup, for DC move)
+- purge (for PoCs)
+- engulfing (take-over a non-deepsea cluster)
+- benchmarking
+  - baseline (ceph bench)
+  - rbd  (fio)
+  - cephfs (fio)
+- smoketests & unittests
+- running in teuthology (ceph specific test tool)
+- new, not yet released
+  - ceph-volume supported
+  - new way of defining OSDs
+    - drivegroup like, aligned with upstream ceph
+    - declarative *demo*?
+
+In addition we have sane defaults, which enables you to run through stages quite statically and
+end up with a running cluster (maybe not optimized, but this enables you to do quick installations to
+demonstrate deepsea and ceph)

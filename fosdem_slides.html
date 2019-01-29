@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>What's new in DeepSea</title>
+<meta name="author" content="(Joshua Schmid)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="./reveal.js/css/reveal.css"/>
+
+<link rel="stylesheet" href="./reveal.js/css/theme/black.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = './reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1>What's new in DeepSea</h1><h3>Joshua Schmid</h3><h4><a href="mailto:jschmid@suse.com">jschmid@suse.com</a></h4>
+</section>
+<section id="table-of-contents">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#/slide-org724596a">1. What's Deepsea?</a>
+<ul>
+<li><a href="#/slide-orgb651cae">1.1. What's salt?</a></li>
+<li><a href="#/slide-org7f6e39e">1.2. What's ceph?</a></li>
+<li><a href="#/slide-org0bdf0ab">1.3. Optional ceph introduction</a></li>
+</ul>
+</li>
+<li><a href="#/slide-org6657559">2. How does DeepSea work?</a>
+<ul>
+<li><a href="#/slide-org61f1143">2.1. Understanding salt concepts</a></li>
+<li><a href="#/slide-org2704b8a">2.2. Concept of Stages</a></li>
+<li><a href="#/slide-org9febddd">2.3. Demo</a></li>
+</ul>
+</li>
+<li><a href="#/slide-orge1bb57e">3. Features</a>
+<ul>
+<li><a href="#/slide-orgc3b2db7">3.1. CLI Wrapper</a>
+<ul>
+<li><a href="#/slide-orge591b24">3.1.1. Salt's event-bus.</a></li>
+</ul>
+</li>
+<li><a href="#/slide-org107a51e">3.2. Roles based installation</a>
+<ul>
+<li><a href="#/slide-orga4b5610">3.2.1. Roles</a></li>
+<li><a href="#/slide-org8faf2b5">3.2.2. Future roles</a></li>
+</ul>
+</li>
+<li><a href="#/slide-orgce0c05f">3.3. Operations (existing)</a>
+<ul>
+<li><a href="#/slide-org3e019b0">3.3.1. Basics</a></li>
+</ul>
+</li>
+<li><a href="#/slide-org559752b">3.4. * Updates</a>
+<ul>
+<li><a href="#/slide-org82f54a7">3.4.1. Package updates</a></li>
+<li><a href="#/slide-org92260b8">3.4.2. Config updates</a></li>
+</ul>
+</li>
+<li><a href="#/slide-orga777072">3.5. Health checks</a>
+<ul>
+<li><a href="#/slide-orga15ca93">3.5.1. Sequential operations with health checks</a></li>
+</ul>
+</li>
+<li><a href="#/slide-org9ad1fdb">3.6. Monitoring</a>
+<ul>
+<li><a href="#/slide-orgce24080">3.6.1. Prometheus</a></li>
+<li><a href="#/slide-org2775ca8">3.6.2. Grafana</a></li>
+</ul>
+</li>
+<li><a href="#/slide-orgf025c26">3.7. Migration</a></li>
+<li><a href="#/slide-org57011e1">3.8. Upgrade</a></li>
+<li><a href="#/slide-org515c53a">3.9. Staged shutdown</a></li>
+<li><a href="#/slide-org2b3d098">3.10. Apparmor</a></li>
+<li><a href="#/slide-orgc2f1ee7">3.11. Tuned</a></li>
+<li><a href="#/slide-orga073ca5">3.12. Purge</a></li>
+<li><a href="#/slide-org6f90c37">3.13. Engulf</a></li>
+<li><a href="#/slide-org0c7ba39">3.14. Benchmarks</a>
+<ul>
+<li><a href="#/slide-org26ea642">3.14.1. Baseline</a></li>
+<li><a href="#/slide-org7a6a0a0">3.14.2. Rbd</a></li>
+<li><a href="#/slide-orgc1475e5">3.14.3. cephfs</a></li>
+</ul>
+</li>
+<li><a href="#/slide-orge5df18f">3.15. Tests</a>
+<ul>
+<li><a href="#/slide-orgad5f109">3.15.1. Integration/Smoketesting</a></li>
+</ul>
+</li>
+<li><a href="#/slide-orge592f2a">3.16. Sane defaults</a></li>
+</ul>
+</li>
+<li><a href="#/slide-org68b2580">4. Credits</a>
+<ul>
+<li><a href="#/slide-orgcd5997c">4.1. SUSE</a></li>
+<li><a href="#/slide-org35a0d28">4.2. The team</a></li>
+<li><a href="#/slide-org469d9b5">4.3. Org-mode</a>
+<ul>
+<li><a href="#/slide-org0fb20a7">4.3.1. org-reveal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#/slide-orgef22223">5. Links</a></li>
+</ul>
+</div>
+</div>
+</section>
+
+
+<section>
+<section id="slide-org724596a">
+<h2 id="org724596a"><span class="section-number-2">1</span> What's Deepsea?</h2>
+<p>
+Deepsea is a project mainly developed at SUSE to deploy and manage ceph.
+Based on Salt
+</p>
+
+<p>
+Jan Fajerski held an introduction talk to DeepSea for FOSDEM 2017. This is a follow-up.
+</p>
+
+</section>
+<section id="slide-orgb651cae">
+<h3 id="orgb651cae"><span class="section-number-3">1.1</span> What's salt?</h3>
+<p>
+Salt is a config-management and remote-execution engine, highly extensible and customizable
+with python and jinja templates.
+</p>
+
+</section>
+<section id="slide-org7f6e39e">
+<h3 id="org7f6e39e"><span class="section-number-3">1.2</span> What's ceph?</h3>
+<p>
+ceph is a free-software storage platform, implements object storage on a single distributed computer cluster, and provides interfaces for object-, block- and file-level storage.
+</p>
+
+</section>
+<section id="slide-org0bdf0ab">
+<h3 id="org0bdf0ab"><span class="section-number-3">1.3</span> Optional ceph introduction</h3>
+
+</section>
+</section>
+<section>
+<section id="slide-org6657559">
+<h2 id="org6657559"><span class="section-number-2">2</span> How does DeepSea work?</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+</section>
+<section id="slide-org61f1143">
+<h3 id="org61f1143"><span class="section-number-3">2.1</span> Understanding salt concepts</h3>
+<ul>
+<li class="fragment appear">States
+<ul>
+<li>Configuration template (install and configure role A)</li>
+
+</ul></li>
+<li class="fragment appear">Orchestrations
+<ul>
+<li>Allows to group states (install core services (A, B, C))</li>
+<li>Very abstracted</li>
+
+</ul></li>
+
+</ul>
+</section>
+<section id="slide-org2704b8a">
+<h3 id="org2704b8a"><span class="section-number-3">2.2</span> Concept of Stages</h3>
+<ul>
+<li class="fragment appear">0 (setup)</li>
+<li class="fragment appear">1 (discovery)</li>
+<li class="fragment appear">2 (configure)</li>
+<li class="fragment appear">3 (deploy)</li>
+<li class="fragment appear">4 (services)</li>
+<li class="fragment appear">5 (removal)</li>
+
+</ul>
+
+</section>
+<section id="slide-org9febddd">
+<h3 id="org9febddd"><span class="section-number-3">2.3</span> Demo</h3>
+<aside class="notes">
+<p>
+This talk will not go in the inner workings of Deepsea or ceph
+</p>
+
+</aside>
+<p>
+<a href="https://asciinema.org/a/213002">https://asciinema.org/a/213002</a>
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orge1bb57e">
+<h2 id="orge1bb57e"><span class="section-number-2">3</span> Features</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+</section>
+<section id="slide-orgc3b2db7">
+<h3 id="orgc3b2db7"><span class="section-number-3">3.1</span> CLI Wrapper</h3>
+<aside class="notes">
+<p>
+We just saw the first feature in the Demo.
+</p>
+
+</aside>
+<p>
+Salt is very terse during orchestrations.
+</p>
+
+</section>
+<section id="slide-orge591b24">
+<h4 id="orge591b24"><span class="section-number-4">3.1.1</span> Salt's event-bus.</h4>
+<ul>
+<li class="fragment appear">Salt evaluates jinja powered yaml files.</li>
+<li class="fragment appear">We can pre-evaluate those and get an idea
+of what's about to get executed.</li>
+<li class="fragment appear">Salt pushes <b>started</b> and <b>finished</b> events on
+the event bus.</li>
+<li class="fragment appear">We listen to the event bus and match the pre-computed
+events to the started/finished emitted events.</li>
+
+</ul>
+<aside class="notes">
+<p>
+You can do this yourself, but the event-bus is cluttered with
+house-keeping stuff from salt and is not easy to read/follow.
+</p>
+
+</aside>
+
+</section>
+<section id="slide-org107a51e">
+<h3 id="org107a51e"><span class="section-number-3">3.2</span> Roles based installation</h3>
+<aside class="notes">
+<p>
+DeepSea uses an easy and flexible way of defining roles
+I'll not go into that today, there are some talks &amp; slides out there
+where you can look that up if you want. (Cephalocon)
+</p>
+
+</aside>
+<p>
+DeepSea uses a role based approach to deploy:
+</p>
+
+</section>
+<section id="slide-orga4b5610">
+<h4 id="orga4b5610"><span class="section-number-4">3.2.1</span> Roles</h4>
+<ul>
+<li class="fragment appear">mon</li>
+<li class="fragment appear">osd</li>
+<li class="fragment appear">mgr</li>
+<li class="fragment appear">rgw</li>
+<li class="fragment appear">mds</li>
+<li class="fragment appear">iscsi</li>
+<li class="fragment appear">ganesha</li>
+<li class="fragment appear">(openattic)
+<ul>
+<li>grafana</li>
+<li>prometheus</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-org8faf2b5">
+<h4 id="org8faf2b5"><span class="section-number-4">3.2.2</span> Future roles</h4>
+<ul>
+<li class="fragment appear">monitoring (prometheus, grafana)</li>
+
+</ul>
+
+</section>
+<section id="slide-orgce0c05f">
+<h3 id="orgce0c05f"><span class="section-number-3">3.3</span> Operations (existing)</h3>
+<div class="outline-text-3" id="text-3-3">
+</div>
+</section>
+<section id="slide-org3e019b0">
+<h4 id="org3e019b0"><span class="section-number-4">3.3.1</span> Basics</h4>
+<p>
+We have been able to:
+</p>
+<ul>
+<li class="fragment appear">Installation</li>
+<li class="fragment appear">Basic configuration</li>
+<li class="fragment appear">Add
+<ul>
+<li>OSDs(individual)</li>
+<li>Nodes</li>
+
+</ul></li>
+<li class="fragment appear">Decommission
+<ul>
+<li>OSDs(individual)</li>
+<li>Nodes</li>
+
+</ul></li>
+<li class="fragment appear">Updates (++restart on new kernel)</li>
+
+</ul>
+
+</section>
+<section id="slide-org559752b">
+<h3 id="org559752b"><span class="section-number-3">3.4</span> * Updates</h3>
+<p>
+We perform updates..
+</p>
+<p class="fragment (appear)">
+Surprise
+</p>
+
+</section>
+<section id="slide-org82f54a7">
+<h4 id="org82f54a7"><span class="section-number-4">3.4.1</span> Package updates</h4>
+<p>
+Packages with pending updates are analyzed
+and stage a restart of the affected service
+</p>
+
+</section>
+<section id="slide-org92260b8">
+<h4 id="org92260b8"><span class="section-number-4">3.4.2</span> Config updates</h4>
+<p>
+DeepSea detects changes in the config and restart
+the corresponding service on the next 'stage' invocation.
+</p>
+
+
+</section>
+<section id="slide-orga777072">
+<h3 id="orga777072"><span class="section-number-3">3.5</span> Health checks</h3>
+<p class="fragment (appear)">
+Salt's forte is to run in parallel.
+What's however not what we want when operating on a live-cluster.
+</p>
+
+<p class="fragment (appear)">
+Bad things can happen!
+</p>
+<ul>
+<li class="fragment appear">bad updates</li>
+<li class="fragment appear">configuration syntax errors</li>
+<li class="fragment appear">kernel crashes</li>
+
+</ul>
+
+</section>
+<section id="slide-orga15ca93">
+<h4 id="orga15ca93"><span class="section-number-4">3.5.1</span> Sequential operations with health checks</h4>
+<ul>
+<li class="fragment appear">Is the node up?</li>
+<li class="fragment appear">Are all expected services up and running?
+<ul>
+<li>systemd, mounts etc</li>
+
+</ul></li>
+<li class="fragment appear">is ceph's health OK?</li>
+
+</ul>
+<p class="fragment (appear)">
+Abort if condition is not met.
+</p>
+
+</section>
+<section id="slide-org9ad1fdb">
+<h3 id="org9ad1fdb"><span class="section-number-3">3.6</span> Monitoring</h3>
+<p>
+was covered up top (just for the record)
+</p>
+
+</section>
+<section id="slide-orgce24080">
+<h4 id="orgce24080"><span class="section-number-4">3.6.1</span> Prometheus</h4>
+<p>
+Fill
+</p>
+
+</section>
+<section id="slide-org2775ca8">
+<h4 id="org2775ca8"><span class="section-number-4">3.6.2</span> Grafana</h4>
+<p>
+Fill
+</p>
+
+</section>
+<section id="slide-orgf025c26">
+<h3 id="orgf025c26"><span class="section-number-3">3.7</span> Migration</h3>
+<p>
+Filestore was the de-facto standard for a long time.
+</p>
+
+
+<p>
+Recommendation for disk type/size are changing.
+</p>
+
+
+<p>
+<b>DeepSea</b> offers a safe and controlled way of converting
+existing OSDs to a new backend or layout. Also in different modes
+(aggressive -&gt; per host, careful -&gt; per osd)
+</p>
+
+
+</section>
+<section id="slide-org57011e1">
+<h3 id="org57011e1"><span class="section-number-3">3.8</span> Upgrade</h3>
+<p>
+Upgrades the cluster from one version of ceph &amp; system
+to the next. (Currently SUSE/openSUSE tested)
+</p>
+
+<p>
+Leverages the 'sequential operations with health checks' from <a href="#/slide-orga15ca93">3.5.1</a>
+</p>
+
+</section>
+<section id="slide-org515c53a">
+<h3 id="org515c53a"><span class="section-number-3">3.9</span> Staged shutdown</h3>
+<p>
+I.e. for a datacenter move
+</p>
+
+</section>
+<section id="slide-org2b3d098">
+<h3 id="org2b3d098"><span class="section-number-3">3.10</span> Apparmor</h3>
+<p>
+Easy to use (enabled by default) profiles.
+</p>
+
+</section>
+<section id="slide-orgc2f1ee7">
+<h3 id="orgc2f1ee7"><span class="section-number-3">3.11</span> Tuned</h3>
+<p>
+Shipped with profiles for mgr, mon and osds
+</p>
+
+</section>
+<section id="slide-orga073ca5">
+<h3 id="orga073ca5"><span class="section-number-3">3.12</span> Purge</h3>
+<p>
+To quickly spin up and tear down a PoC cluster.
+</p>
+
+</section>
+<section id="slide-org6f90c37">
+<h3 id="org6f90c37"><span class="section-number-3">3.13</span> Engulf</h3>
+<p class="fragment (appear)">
+This feature is special :/
+</p>
+
+<p>
+This arose from the need to be able to control non-deepsea clusters
+</p>
+
+<p>
+We try to 'engulf' all services we find and control them via salt/DeepSea
+</p>
+
+<p>
+It's a tricky one as there were no strict rules or standards where to put files.
+</p>
+
+<p>
+Take it with a grain of salt (pun intended)
+</p>
+
+</section>
+<section id="slide-org0c7ba39">
+<h3 id="org0c7ba39"><span class="section-number-3">3.14</span> Benchmarks</h3>
+<div class="outline-text-3" id="text-3-14">
+</div>
+</section>
+<section id="slide-org26ea642">
+<h4 id="org26ea642"><span class="section-number-4">3.14.1</span> Baseline</h4>
+<p>
+using ceph-bench
+</p>
+
+</section>
+<section id="slide-org7a6a0a0">
+<h4 id="org7a6a0a0"><span class="section-number-4">3.14.2</span> Rbd</h4>
+<p>
+using fio
+</p>
+
+</section>
+<section id="slide-orgc1475e5">
+<h4 id="orgc1475e5"><span class="section-number-4">3.14.3</span> cephfs</h4>
+<p>
+using fio
+</p>
+
+</section>
+<section id="slide-orge5df18f">
+<h3 id="orge5df18f"><span class="section-number-3">3.15</span> Tests</h3>
+<p>
+We added a bunch of unittests but the more
+important part is
+</p>
+
+</section>
+<section id="slide-orgad5f109">
+<h4 id="orgad5f109"><span class="section-number-4">3.15.1</span> Integration/Smoketesting</h4>
+<p>
+We leverage teuthology(ceph's internal testing framework)
+to launch tests.
+</p>
+
+</section>
+<section id="slide-orge592f2a">
+<h3 id="orge592f2a"><span class="section-number-3">3.16</span> Sane defaults</h3>
+<p>
+DeepSea is great for PoC'ing.
+</p>
+
+<p>
+Running through stages 0-4(5) only
+requires human intervention once.
+</p>
+
+<ul>
+<li>Assign roles to hosts</li>
+
+</ul>
+
+<p>
+It assumes sane defaults but let's you configure
+everything. (even the states/orchestrations are customizable)
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-org68b2580">
+<h2 id="org68b2580"><span class="section-number-2">4</span> Credits</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+</section>
+<section id="slide-orgcd5997c">
+<h3 id="orgcd5997c"><span class="section-number-3">4.1</span> SUSE</h3>
+<p>
+For paying my trip &amp; accomodation
+</p>
+</section>
+<section id="slide-org35a0d28">
+<h3 id="org35a0d28"><span class="section-number-3">4.2</span> The team</h3>
+<p>
+Eric Jackson
+Jan Fajerski
+Tim Serong
+Ricardo Dias
+Nathan Cutler
+</p>
+
+</section>
+<section id="slide-org469d9b5">
+<h3 id="org469d9b5"><span class="section-number-3">4.3</span> Org-mode</h3>
+<div class="outline-text-3" id="text-4-3">
+</div>
+</section>
+<section id="slide-org0fb20a7">
+<h4 id="org0fb20a7"><span class="section-number-4">4.3.1</span> org-reveal</h4>
+<p>
+The slides are written in .org format
+and converted to html (reveal.js fueled)
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgef22223">
+<h2 id="orgef22223"><span class="section-number-2">5</span> Links</h2>
+<p>
+Deepsea: <a href="https://github.com/SUSE/Deepsea">https://github.com/SUSE/Deepsea</a>
+</p>
+
+<p>
+Slides: <a href="https://github.com/jschmid1/FOSDEM_2019">https://github.com/jschmid1/FOSDEM_2019</a>
+</p>
+
+<p>
+Github: <a href="https://github.com/jschmid1">https://github.com/jschmid1</a>
+</p>
+
+<p>
+email: jschmid@suse.de
+</p>
+
+<p>
+or:    jxs@posteo.de
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="./reveal.js/lib/js/head.min.js"></script>
+<script src="./reveal.js/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: './reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: './reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: './reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
