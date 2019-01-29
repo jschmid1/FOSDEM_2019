@@ -1,5 +1,6 @@
 #+REVEAL_TRANS: linear
 #+REVEAL_THEME: black
+#+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
 #+Title: What's new in DeepSea
 #+Author: Joshua Schmid
 #+Email: jschmid@suse.com
@@ -246,12 +247,16 @@ everything. (even the states/orchestrations are customizable)
 * Credits
 
 ** SUSE
-For paying my trip & accomodation
+For paying my trip & accommodation
 ** The team
 Eric Jackson
+
 Jan Fajerski
+
 Tim Serong
+
 Ricardo Dias
+
 Nathan Cutler
 
 ** Org-mode
