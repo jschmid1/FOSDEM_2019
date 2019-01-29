@@ -1,0 +1,271 @@
+#+REVEAL_TRANS: linear
+#+REVEAL_THEME: black
+#+Title: What's new in DeepSea
+#+Author: Joshua Schmid
+#+Email: jschmid@suse.com
+#+OPTIONS: reveal_title_slide:"<h1>%t</h1><h3>%a</h3><h4>%e</h4>"
+
+
+* What's Deepsea?
+
+Deepsea is a project mainly developed at SUSE to deploy and manage ceph.
+Based on Salt
+
+Jan Fajerski held an introduction talk to DeepSea for FOSDEM 2017. This is a follow-up.
+
+** What's salt?
+
+Salt is a config-management and remote-execution engine, highly extensible and customizable
+with python and jinja templates.
+
+** What's ceph?
+
+ceph is a free-software storage platform, implements object storage on a single distributed computer cluster, and provides interfaces for object-, block- and file-level storage.
+
+** Optional ceph introduction
+
+* How does DeepSea work?
+
+** Understanding salt concepts
+
+#+ATTR_REVEAL: :frag (appear)
+  * States
+    * Configuration template (install and configure role A)
+  * Orchestrations
+    * Allows to group states (install core services (A, B, C))
+    * Very abstracted
+** Concept of Stages
+#+ATTR_REVEAL: :frag (appear)
+  * 0 (setup)
+  * 1 (discovery)
+  * 2 (configure)
+  * 3 (deploy)
+  * 4 (services)
+  * 5 (removal)
+
+** Demo
+#+BEGIN_NOTES
+   This talk will not go in the inner workings of Deepsea or ceph
+#+END_NOTES
+https://asciinema.org/a/213002
+
+* Features
+
+** CLI Wrapper
+
+#+BEGIN_NOTES
+We just saw the first feature in the Demo.
+#+END_NOTES
+Salt is very terse during orchestrations.
+
+*** Salt's event-bus.
+#+ATTR_REVEAL: :frag (appear)
+  * Salt evaluates jinja powered yaml files.
+  * We can pre-evaluate those and get an idea
+    of what's about to get executed.
+  * Salt pushes *started* and *finished* events on
+    the event bus.
+  * We listen to the event bus and match the pre-computed
+    events to the started/finished emitted events.
+#+BEGIN_NOTES
+You can do this yourself, but the event-bus is cluttered with
+house-keeping stuff from salt and is not easy to read/follow.
+#+END_NOTES
+
+** Roles based installation
+
+#+BEGIN_NOTES
+DeepSea uses an easy and flexible way of defining roles
+I'll not go into that today, there are some talks & slides out there
+where you can look that up if you want. (Cephalocon)
+#+END_NOTES
+DeepSea uses a role based approach to deploy:
+
+*** Roles
+#+ATTR_REVEAL: :frag (appear)
+ - mon
+ - osd
+ - mgr
+ - rgw
+ - mds
+ - iscsi
+ - ganesha
+ - (openattic)
+   - grafana
+   - prometheus
+
+*** Future roles
+#+ATTR_REVEAL: :frag (appear)
+ - monitoring (prometheus, grafana)
+
+** Operations (existing)
+
+*** Basics
+We have been able to:
+#+ATTR_REVEAL: :frag (appear)
+  * Installation
+  * Basic configuration
+  * Add
+    * OSDs(individual)
+    * Nodes
+  * Decommission
+    * OSDs(individual)
+    * Nodes
+  * Updates (++restart on new kernel)
+
+** * Updates
+
+We perform updates..
+#+ATTR_REVEAL: :frag (appear)
+Surprise
+
+*** Package updates
+
+Packages with pending updates are analyzed
+and stage a restart of the affected service
+
+*** Config updates
+DeepSea detects changes in the config and restart
+the corresponding service on the next 'stage' invocation.
+
+
+** Health checks
+
+#+ATTR_REVEAL: :frag (appear)
+Salt's forte is to run in parallel.
+What's however not what we want when operating on a live-cluster.
+
+#+ATTR_REVEAL: :frag (appear)
+Bad things can happen!
+#+ATTR_REVEAL: :frag (appear)
+   * bad updates
+   * configuration syntax errors
+   * kernel crashes
+
+*** Sequential operations with health checks
+#+ATTR_REVEAL: :frag (appear)
+   * Is the node up?
+   * Are all expected services up and running?
+     * systemd, mounts etc
+   * is ceph's health OK?
+#+ATTR_REVEAL: :frag (appear)
+Abort if condition is not met.
+
+** Monitoring
+
+was covered up top (just for the record)
+
+*** Prometheus
+Fill
+
+*** Grafana
+Fill
+
+** Migration
+
+Filestore was the de-facto standard for a long time.
+
+
+Recommendation for disk type/size are changing.
+
+
+*DeepSea* offers a safe and controlled way of converting
+existing OSDs to a new backend or layout. Also in different modes
+(aggressive -> per host, careful -> per osd)
+
+
+** Upgrade
+
+Upgrades the cluster from one version of ceph & system
+to the next. (Currently SUSE/openSUSE tested)
+
+Leverages the 'sequential operations with health checks' from [[Sequential operations with health checks]]
+
+** Staged shutdown
+
+I.e. for a datacenter move
+
+** Apparmor
+
+Easy to use (enabled by default) profiles.
+
+** Tuned
+
+Shipped with profiles for mgr, mon and osds
+
+** Purge
+
+To quickly spin up and tear down a PoC cluster.
+
+** Engulf
+
+#+ATTR_REVEAL: :frag (appear)
+  This feature is special :/
+
+  This arose from the need to be able to control non-deepsea clusters
+
+  We try to 'engulf' all services we find and control them via salt/DeepSea
+
+  It's a tricky one as there were no strict rules or standards where to put files.
+
+  Take it with a grain of salt (pun intended)
+
+** Benchmarks
+
+*** Baseline
+using ceph-bench
+
+*** Rbd
+using fio
+
+*** cephfs
+using fio
+
+** Tests
+
+We added a bunch of unittests but the more
+important part is
+
+*** Integration/Smoketesting
+
+We leverage teuthology(ceph's internal testing framework)
+to launch tests.
+
+** Sane defaults
+
+DeepSea is great for PoC'ing.
+
+Running through stages 0-4(5) only
+requires human intervention once.
+
+- Assign roles to hosts
+
+It assumes sane defaults but let's you configure
+everything. (even the states/orchestrations are customizable)
+
+* Credits
+
+** SUSE
+For paying my trip & accomodation
+** The team
+Eric Jackson
+Jan Fajerski
+Tim Serong
+Ricardo Dias
+Nathan Cutler
+
+** Org-mode
+*** org-reveal
+The slides are written in .org format
+and converted to html (reveal.js fueled)
+
+* Links
+Deepsea: https://github.com/SUSE/Deepsea
+
+Slides: https://github.com/jschmid1/FOSDEM_2019
+
+Github: https://github.com/jschmid1
+
+email: jschmid@suse.de
+
+or:    jxs@posteo.de
