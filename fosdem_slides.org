@@ -24,6 +24,13 @@ with python and jinja templates.
 ceph is a free-software storage platform, implements object storage on a single distributed computer cluster, and provides interfaces for object-, block- and file-level storage.
 
 ** Optional ceph introduction
+Software defined distributed storage platform which implements
+object storage on clusters and provides interfaces for object,
+block and file level storage.
+
+No Lookup tables/Databases/Directory hierarchy
+CRUSH computes object pseudo-random object placement
+Reliable / self-healing self-managing
 
 * How does DeepSea work?
 
@@ -79,6 +86,8 @@ house-keeping stuff from salt and is not easy to read/follow.
 DeepSea uses an easy and flexible way of defining roles
 I'll not go into that today, there are some talks & slides out there
 where you can look that up if you want. (Cephalocon)
+https://www.youtube.com/watch?v=yUgTalLGDNs
+https://www.youtube.com/watch?v=1uyZ6mhbKXM
 #+END_NOTES
 DeepSea uses a role based approach to deploy:
 
@@ -116,7 +125,7 @@ We have been able to:
 
 ** * Updates
 
-We perform updates..
+We still perform updates..
 #+ATTR_REVEAL: :frag (appear)
 Surprise
 
@@ -157,10 +166,10 @@ Abort if condition is not met.
 was covered up top (just for the record)
 
 *** Prometheus
-Fill
+Monitoring system (scrapes data)
 
 *** Grafana
-Fill
+Time series analytics with neat dashboards
 
 ** Migration
 
@@ -194,9 +203,6 @@ Easy to use (enabled by default) profiles.
 
 Shipped with profiles for mgr, mon and osds
 
-** Purge
-
-To quickly spin up and tear down a PoC cluster.
 
 ** Engulf
 
@@ -232,6 +238,11 @@ important part is
 We leverage teuthology(ceph's internal testing framework)
 to launch tests.
 
+
+** Purge
+
+To quickly spin up and tear down a PoC cluster.
+
 ** Sane defaults
 
 DeepSea is great for PoC'ing.
@@ -248,6 +259,9 @@ everything. (even the states/orchestrations are customizable)
 
 ** SUSE
 For paying my trip & accommodation
+
+Supporting the DeepSea project
+
 ** The team
 Eric Jackson
 
@@ -265,9 +279,12 @@ The slides are written in .org format
 and converted to html (reveal.js fueled)
 
 * Links
+
 Deepsea: https://github.com/SUSE/Deepsea
 
-Slides: https://github.com/jschmid1/FOSDEM_2019
+Slides(source): https://github.com/jschmid1/FOSDEM_2019
+
+Slides(live): https://jschmid1.github.io/FOSDEM_2019/
 
 Github: https://github.com/jschmid1
 
