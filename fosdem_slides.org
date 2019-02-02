@@ -23,15 +23,6 @@ with python and jinja templates.
 
 ceph is a free-software storage platform, implements object storage on a single distributed computer cluster, and provides interfaces for object-, block- and file-level storage.
 
-** Optional ceph introduction
-Software defined distributed storage platform which implements
-object storage on clusters and provides interfaces for object,
-block and file level storage.
-
-No Lookup tables/Databases/Directory hierarchy
-CRUSH computes object pseudo-random object placement
-Reliable / self-healing self-managing
-
 * How does DeepSea work?
 
 ** Understanding salt concepts
